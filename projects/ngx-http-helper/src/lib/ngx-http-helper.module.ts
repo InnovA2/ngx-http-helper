@@ -1,5 +1,5 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { AuthInterceptor } from './auth-interceptor';
+import { AuthInterceptor } from './interceptor/auth-interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Config } from './config';
 
@@ -15,14 +15,14 @@ export class NgxHttpHelperModule {
             ngModule: NgxHttpHelperModule,
             providers: [
                 {
+                    provide: Config,
+                    useValue: config
+                },
+                {
                     multi: true,
                     provide: HTTP_INTERCEPTORS,
                     useClass: AuthInterceptor,
                 },
-                {
-                    provide: Config,
-                    useValue: config
-                }
             ]
         }
     }

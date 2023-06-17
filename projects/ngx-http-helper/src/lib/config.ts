@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, ObservableInput } from 'rxjs';
 
 export interface IAuthConfig {
     tokenSelector: () => Observable<string>;
@@ -7,6 +7,11 @@ export interface IAuthConfig {
     domains?: string[];
 }
 
+export interface IClientConfig {
+    catch?: (err: any, caught: Observable<any>) => ObservableInput<any>;
+}
+
 export class Config {
-    authConfigs: IAuthConfig[] = [];
+    authenticators: IAuthConfig[] = [];
+    client: IClientConfig = {};
 }

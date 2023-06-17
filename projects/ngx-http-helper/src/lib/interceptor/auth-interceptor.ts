@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { first, mergeMap, Observable } from 'rxjs';
-import { Config, IAuthConfig } from './config';
+import { Config, IAuthConfig } from '../config';
 import { UrlBuilder } from '@innova2/url-builder';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class AuthInterceptor implements HttpInterceptor {
     findAuthConfig(url: string): IAuthConfig | undefined {
         const targetedDomain = UrlBuilder.createFromUrl(url).getHost();
 
-        return this.config.authConfigs.find(c => {
+        return this.config.authenticators.find(c => {
             if (!c.domains || !c.domains.length) {
                 return true;
             }
