@@ -1,4 +1,4 @@
-import { AuthInterceptor } from './auth-interceptor';
+import { AuthInterceptor } from './auth.interceptor';
 
 describe('TokenInterceptor', () => {
   it('should create an instance', () => {
