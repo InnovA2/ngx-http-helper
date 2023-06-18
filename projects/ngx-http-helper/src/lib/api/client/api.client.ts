@@ -4,12 +4,8 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Router } from '@angular/router';
 import { CacheService } from 'ionic-cache';
-import { Config } from '../config';
-
-interface CacheOpts {
-    group: string;
-    ttl: number;
-}
+import { Config } from '../../config';
+import { CacheOptions } from '../api-options';
 
 @Injectable()
 export class ApiClient {
@@ -19,7 +15,7 @@ export class ApiClient {
                 private cacheService: CacheService) {
     }
 
-    get<T>(url: UrlBuilder, cache?: CacheOpts, opts?: any): Observable<HttpResponse<T>> {
+    get<T>(url: UrlBuilder, cache?: CacheOptions, opts?: any): Observable<HttpResponse<T>> {
         const call = this.call<T>('get', url, opts || {});
 
         return cache && cache.ttl > 0

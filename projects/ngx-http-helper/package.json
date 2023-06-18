@@ -4,7 +4,7 @@
   "peerDependencies": {
     "@angular/common": "^16.0.0",
     "@angular/core": "^16.0.0",
-    "@innova2/url-builder": "^2.3.5"
+    "@innova2/url-builder": "^2.4.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

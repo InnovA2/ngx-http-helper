@@ -8,6 +8,8 @@ export interface IAuthConfig {
 }
 
 export interface IClientConfig {
+    baseUrl?: string;
+    defaultCacheTTL?: number;
     catch?: (err: any, caught: Observable<any>) => ObservableInput<any>;
 }
 
