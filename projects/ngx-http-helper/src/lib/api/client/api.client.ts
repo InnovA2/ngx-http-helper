@@ -48,14 +48,13 @@ export class ApiClient {
                 ...opts.headers,
             }
         }
-        const { client: config } = this.config.client;
 
-        this.httpClient.get('').pipe(catchError(err => err));
+        const httpFunction: <T>(...args: any[]) => Observable<HttpResponse<T>> = (this.httpClient as any)[method];
 
         const call = ['post', 'put', 'patch'].includes(method)
-            ? this.httpClient[method]<T>(url.toString(), options)
-            : this.httpClient[method]<T>(url.toString(), data, { ...options, data });
+            ? httpFunction<T>(url.toString(), options)
+            : httpFunction<T>(url.toString(), data, { ...options, data });
 
-        return call.pipe(catchError(config.catch || (err => throwError(() => err))));
+        return call.pipe(catchError(this.config.client.catch || (err => throwError(() => err))));
     }
 }

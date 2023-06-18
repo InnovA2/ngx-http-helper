@@ -12,8 +12,8 @@ import { PaginatedData } from './paginated-data';
     providedIn: 'root'
 })
 export class RestService<O, I = any> {
-    protected readonly baseUrl: UrlBuilder;
-    protected readonly resourceUri: string;
+    protected readonly baseUrl!: UrlBuilder;
+    protected readonly resourceUri!: string;
 
     constructor(private config: Config,
                 protected apiClient: ApiClient) {
