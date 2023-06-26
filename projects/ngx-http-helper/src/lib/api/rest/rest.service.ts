@@ -1,25 +1,22 @@
 import { map } from 'rxjs/operators';
 import { mergeMap, Observable, of } from 'rxjs';
-import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ApiClient } from '../client/api.client';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Config } from '../../config';
 import { CacheOptions, FindAllOptions, FindOptions, Params } from '../api-options';
 import { PaginatedData } from './paginated-data';
+import { Injectable } from '@angular/core';
 
-@Injectable({
-    providedIn: 'root'
-})
-export class RestService<O, I = any> {
-    protected readonly baseUrl!: UrlBuilder;
+@Injectable()
+export class RestService<O, I = O> {
+    protected readonly baseUrl = this.config.client.baseUrl;
     protected readonly resourceUri!: string;
 
-    constructor(private config: Config,
+    private baseUrlBuilder?: UrlBuilder;
+
+    constructor(protected config: Config,
                 protected apiClient: ApiClient) {
-        if (!this.baseUrl && config.client.baseUrl) {
-            this.baseUrl = UrlBuilder.createFromUrl(config.client.baseUrl);
-        }
     }
 
     findAll(opts?: FindAllOptions): Observable<O[]>;
@@ -30,7 +27,7 @@ export class RestService<O, I = any> {
         const options = (typeof pageOrOpts === 'number' ? opts : pageOrOpts) || {};
         const page = typeof pageOrOpts === 'number' ? pageOrOpts : null;
 
-        const url = this.baseUrl.copy().addPath(this.resourceUri, options.params);
+        const url = this.getBaseUrl().copy().addPath(this.resourceUri, options.params);
         if (page) {
             url.addQueryParam('page', page);
         }
@@ -50,7 +47,7 @@ export class RestService<O, I = any> {
     }
 
     findById(id: string | number, opts: FindOptions = {}): Observable<O> {
-        const url = this.baseUrl.copy()
+        const url = this.getBaseUrl().copy()
             .addPath(this.resourceUri, opts.params)
             .addPath(':id', { id })
             .addQueryParams(opts.queryParams || {});
@@ -61,7 +58,7 @@ export class RestService<O, I = any> {
     }
 
     create(data: Partial<I>, params?: Params, queryParams?: Params, callIdentifier = false): Observable<O> {
-        const url = this.baseUrl.copy().addPath(this.resourceUri, params);
+        const url = this.getBaseUrl().copy().addPath(this.resourceUri, params);
         if (queryParams) {
             url.addQueryParams(queryParams);
         }
@@ -71,7 +68,10 @@ export class RestService<O, I = any> {
                 if (!callIdentifier) {
                     return of(res);
                 }
-                const path = res.headers.get('location') || '';
+                const path = res.headers.get('location');
+                if (!path) {
+                    throw Error('Location header not found');
+                }
                 const identifierUrl = url.copy().setPathSegments([path.replace(/^\/+/g, '')]);
                 return this.apiClient.get<O>(identifierUrl, this.initializeCacheOptions(identifierUrl));
             }),
@@ -80,7 +80,7 @@ export class RestService<O, I = any> {
     }
 
     update(id: string, data: Partial<I>, params?: Params): Observable<O> {
-        const url = this.baseUrl.copy()
+        const url = this.getBaseUrl().copy()
             .addPath(this.resourceUri, params)
             .addPath(':id', { id })
 
@@ -91,14 +91,25 @@ export class RestService<O, I = any> {
 
     delete(id: string, params?: Record<string, string | number>, data?: Partial<I>): Observable<HttpResponse<void>> {
         return this.apiClient.delete<void>(
-            this.baseUrl.copy()
+            this.getBaseUrl().copy()
                 .addPath(this.resourceUri, params)
                 .addPath(':id', { id }),
             data,
         );
     }
 
-    private initializeCacheOptions = (url: UrlBuilder, ttl?: number): CacheOptions => ({
+    protected getBaseUrl(): UrlBuilder {
+        if (!this.baseUrl) {
+            throw Error('BaseUrl is not defined');
+        }
+
+        if (!this.baseUrlBuilder) {
+            this.baseUrlBuilder = UrlBuilder.createFromUrl(this.baseUrl);
+        }
+        return this.baseUrlBuilder;
+    }
+
+    protected initializeCacheOptions = (url: UrlBuilder, ttl?: number): CacheOptions => ({
         group: url.getRelativePath(),
         ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
     })

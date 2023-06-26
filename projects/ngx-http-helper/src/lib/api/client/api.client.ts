@@ -49,11 +49,10 @@ export class ApiClient {
             }
         }
 
-        const httpFunction: <T>(...args: any[]) => Observable<HttpResponse<T>> = (this.httpClient as any)[method];
-
-        const call = ['post', 'put', 'patch'].includes(method)
-            ? httpFunction<T>(url.toString(), options)
-            : httpFunction<T>(url.toString(), data, { ...options, data });
+        const call = this.httpClient.request(method, url.toString(), {
+            body: data,
+            ...options
+        })
 
         return call.pipe(catchError(this.config.client.catch || (err => throwError(() => err))));
     }

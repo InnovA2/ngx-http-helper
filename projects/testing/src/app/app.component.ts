@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { API_USERS } from './consts';
+import { UserService } from './user.service';
 
 @Component({
     selector: 'app-root',
@@ -8,10 +7,12 @@ import { API_USERS } from './consts';
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-    constructor(private http: HttpClient) {
+    constructor(private userService: UserService) {
     }
 
     ngOnInit(): void {
-        this.http.get(API_USERS).subscribe(() => {});
+        this.userService.findAll().subscribe(console.log);
+        this.userService.findAll().subscribe(console.log);
+        this.userService.findAll().subscribe(console.log);
     }
 }
