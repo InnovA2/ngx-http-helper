@@ -18,7 +18,7 @@ export class NgxHttpHelperModule {
             providers: [
                 {
                     provide: Config,
-                    useValue: config
+                    useValue: config,
                 },
                 {
                     multi: true,

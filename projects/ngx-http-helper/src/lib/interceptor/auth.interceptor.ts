@@ -32,7 +32,7 @@ export class AuthInterceptor implements HttpInterceptor {
         );
     }
 
-    findAuthConfig(url: string): IAuthConfig | undefined {
+    private findAuthConfig(url: string): IAuthConfig | undefined {
         const targetedDomain = UrlBuilder.createFromUrl(url).getHost();
 
         return this.config.authenticators.find(c => {

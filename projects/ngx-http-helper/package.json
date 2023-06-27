@@ -7,6 +7,10 @@
     "@innova2/url-builder": "^2.4.0",
     "ionic-cache": "^6.0.3"
   },
+  "scripts": {
+    "test": "ng test",
+    "test:cov": "ng test --code-coverage"
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },
