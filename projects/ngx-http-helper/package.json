@@ -1,6 +1,6 @@
 {
-  "name": "ngx-http-helper",
-  "version": "1.0.0",
+  "name": "@innova2/ngx-http-helper",
+  "version": "1.0.1",
   "peerDependencies": {
     "@angular/common": "^16.0.0",
     "@angular/core": "^16.0.0",
