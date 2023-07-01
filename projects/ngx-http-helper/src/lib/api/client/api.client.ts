@@ -39,7 +39,7 @@ export class ApiClient {
         return this.call<T>('delete', url, opts || {}, data);
     }
 
-    protected call<T>(method: string, url: UrlBuilder, opts: any, data?: any): Observable<HttpResponse<T>> {
+    private call<T>(method: string, url: UrlBuilder, opts: any, data?: any): Observable<HttpResponse<T>> {
         const options = {
             observe: 'response',
             ...opts,

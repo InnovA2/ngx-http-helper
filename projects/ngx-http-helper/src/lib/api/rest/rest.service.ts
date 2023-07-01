@@ -98,7 +98,12 @@ export class RestService<O, I = O> {
         );
     }
 
-    protected getBaseUrl(): UrlBuilder {
+    protected initializeCacheOptions = (url: UrlBuilder, ttl?: number): CacheOptions => ({
+        group: url.getRelativePath(),
+        ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
+    })
+
+    private getBaseUrl(): UrlBuilder {
         if (!this.baseUrl) {
             throw Error('BaseUrl is not defined');
         }
@@ -108,9 +113,4 @@ export class RestService<O, I = O> {
         }
         return this.baseUrlBuilder;
     }
-
-    protected initializeCacheOptions = (url: UrlBuilder, ttl?: number): CacheOptions => ({
-        group: url.getRelativePath(),
-        ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
-    })
 }

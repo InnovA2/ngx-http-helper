@@ -20,7 +20,7 @@ import { CacheModule } from 'ionic-cache';
             authenticators: [{
                 tokenSelector: () => of('test'),
                 scheme: 'Bearer',
-                domains: ['https://foo.bar']
+                domains: ['https://foo.bar'],
             },{
                 tokenSelector: () => of('My Token'),
                 scheme: 'Bearer',
