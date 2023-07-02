@@ -219,7 +219,7 @@ patch<T>(url: UrlBuilder, data: any, opts?: any): Observable<HttpResponse<T>>
 delete<T>(url: UrlBuilder, data?: any, opts?: any): Observable<HttpResponse<T>>
 ```
 
-### UrlUtils (namespace)
+### RestService
 ```ts
 protected readonly baseUrl = this.config.client.baseUrl;
 protected readonly resourceUri!: string;
