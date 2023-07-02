@@ -2,11 +2,9 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
 import { of } from 'rxjs';
 import { API_URL } from './consts';
 import { NgxHttpHelperModule } from '../../../ngx-http-helper/src/public-api';
-import { CacheModule } from 'ionic-cache';
 
 @NgModule({
     declarations: [
@@ -14,8 +12,6 @@ import { CacheModule } from 'ionic-cache';
     ],
     imports: [
         BrowserModule,
-        HttpClientModule,
-        CacheModule.forRoot(),
         NgxHttpHelperModule.forRoot({
             authenticators: [{
                 tokenSelector: () => of('test'),
