@@ -60,6 +60,7 @@ NgxHttpHelperModule.forRoot({
 
 As you can see, to transmit your token or API key, you must create the 'tokenSelector' function and return an observable of your token.
 Also, you can target specific domains for each token.
+*Note: You can target all domains by removing the 'domains' property.*
 
 For JWT token, you can add scheme 'Bearer' (or another) to prefix the token (e.g. Bearer My JWT Token).
 
