@@ -32,10 +32,10 @@ Import the module and configure it according to your choices.
 ```ts
 @NgModule({
     ...
-    imports: [
-        ...
+        imports: [
+    ...
         NgxHttpHelperModule.forRoot({})
-    ],
+],
 })
 export class AppModule {}
 ```
@@ -60,6 +60,7 @@ NgxHttpHelperModule.forRoot({
 
 As you can see, to transmit your token or API key, you must create the 'tokenSelector' function and return an observable of your token.
 Also, you can target specific domains for each token.
+*Note: You can target all domains by removing the 'domains' property.*
 
 For JWT token, you can add scheme 'Bearer' (or another) to prefix the token (e.g. Bearer My JWT Token).
 
@@ -219,7 +220,7 @@ patch<T>(url: UrlBuilder, data: any, opts?: any): Observable<HttpResponse<T>>
 delete<T>(url: UrlBuilder, data?: any, opts?: any): Observable<HttpResponse<T>>
 ```
 
-### UrlUtils (namespace)
+### RestService
 ```ts
 protected readonly baseUrl = this.config.client.baseUrl;
 protected readonly resourceUri!: string;
@@ -238,7 +239,7 @@ The initializeCacheOptions return by default:
 ```ts
 {
     group: url.getRelativePath(),
-    ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
+        ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
 }
 ```
 *Note: You can override this function.*
