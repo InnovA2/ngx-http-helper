@@ -2,7 +2,6 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { UrlBuilder } from '@innova2/url-builder';
-import { Router } from '@angular/router';
 import { CacheService } from 'ionic-cache';
 import { Config } from '../../config';
 import { CacheOptions } from '../api-options';
@@ -11,7 +10,6 @@ import { CacheOptions } from '../api-options';
 export class ApiClient {
     constructor(private httpClient: HttpClient,
                 private config: Config,
-                private router: Router,
                 private cacheService: CacheService) {
     }
 

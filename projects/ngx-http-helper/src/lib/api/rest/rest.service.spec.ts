@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RestService } from './rest.service';
 import { ApiClient } from '../client/api.client';
-import { EMPTY, of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { Config } from '../../config';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Injectable } from '@angular/core';
@@ -13,6 +13,7 @@ import { HttpHeaders } from '@angular/common/http';
 interface User {
     id: number;
     name: string;
+    roleId: number;
 }
 
 @Injectable({
@@ -20,12 +21,20 @@ interface User {
 })
 export class UserService extends RestService<User> {
     protected override readonly resourceUri = 'users';
+
+    findAllByRoleId(roleId: number) {
+        return this.findAll({
+            resourceUri: 'roles/:roleId/users',
+            params: { roleId }
+        });
+    }
 }
 
 describe('RestService', () => {
     const user: User = {
         id: 1,
-        name: 'foo'
+        name: 'foo',
+        roleId: 1,
     }
 
     let apiClient: ApiClient;
@@ -94,6 +103,15 @@ describe('RestService', () => {
                 done();
             });
         });
+
+        it('should findAll with specific resourceUri', (done) => {
+            spyOn(apiClient, 'get').and.callFake(url => of({ body: url.getRelativePath() }) as any);
+
+            (userService.findAllByRoleId(1) as Observable<any>).subscribe(res => {
+                expect(res).toEqual('/roles/1/users');
+                done();
+            });
+        });
     });
 
     it('should find specific user', (done) => {
@@ -106,7 +124,7 @@ describe('RestService', () => {
     });
 
     describe('create tests', () => {
-        const newUser = { id: 2, name: 'bar' };
+        const newUser = { id: 2, name: 'bar', roleId: 1 };
 
         it('should create a new user', (done) => {
             spyOn(apiClient, 'post').and.returnValue(of({ body: newUser }) as any);
@@ -120,7 +138,9 @@ describe('RestService', () => {
         it('should create a new user with queryParams', (done) => {
             spyOn(apiClient, 'post').and.returnValue(of({ body: newUser }) as any);
 
-            userService.create(newUser, {}, { type: 'test' }).subscribe(res => {
+            userService.create(newUser, {
+                queryParams: { type: 'test' }
+            }).subscribe(res => {
                 expect(res).toEqual(newUser);
 
                 const expectedUrl = UrlBuilder.createFromUrl('http://localhost/users?type=test');
@@ -133,7 +153,7 @@ describe('RestService', () => {
             spyOn(apiClient, 'post').and.returnValue(of({ body: newUser, headers: new HttpHeaders({ location: '/users/2' }) }) as any);
             spyOn(apiClient, 'get').and.returnValue(of({ body: newUser }) as any);
 
-            userService.create(newUser, {}, {}, true).subscribe(res => {
+            userService.create(newUser, {}, true).subscribe(res => {
                 expect(res).toEqual(newUser);
                 expect(apiClient.get).toHaveBeenCalled();
                 done();

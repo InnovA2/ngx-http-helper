@@ -10,6 +10,12 @@ A lightweight library to easily call your APIs and add JWT token or API key on e
 - [Authors](#busts_in_silhouette-authors)
 - [Contributors](#handshake-contributors)
 
+## :boom: Breaking changes (1.0 -> 1.1)
+The signature of the following methods changes:
+- **RestService#create**: arguments 'params' and 'queryParams' are replaced by 'opts' (options object containing 'params' and 'queryParams' properties)
+- **RestService#update**: argument 'params' is replaced by 'opts' (options object containing 'params' property)
+- **RestService#remove**: argument 'params' is replaced by 'opts' (options object containing 'params' property)
+
 ## :bookmark_tabs: Features
 This library allows :
 - Intercept http calls by domain to add your API key, JWT token...
@@ -34,7 +40,7 @@ Import the module and configure it according to your choices.
     ...
     imports: [
         ...
-        NgxHttpHelperModule.forRoot({})
+        NgxHttpHelperModule.forRoot({<options here>})
     ],
 })
 export class AppModule {}
@@ -189,6 +195,31 @@ class ListUsersComponent {
 }
 ```
 
+You can override the resourceUri for specific call if needed:
+```ts
+import { RestService } from '@innova2/ngx-http-helper';
+
+interface User {
+    id: string;
+    name: string;
+    avatar: string;
+    createdAt: string;
+}
+
+@Injectable(...)
+export class UserService extends RestService<User> {
+    protected override readonly resourceUri = 'users';
+
+    findAllByRoleId(roleId: number) {
+        return this.findAll({
+            resourceUri: 'roles/:roleId/users',
+            params: { roleId }
+        });
+    }
+}
+```
+We are not using the 'resourceUri' class property here, but instead we are using that provided as a function argument 'opts' (options).
+
 ## :gear: API
 ### Config
 ```ts
@@ -229,9 +260,9 @@ findAll(opts?: FindAllOptions): Observable<O[]>;
 findAll(page: number, opts?: FindAllOptions): Observable<PaginatedData<O>>;
 findAll(pageOrOpts?: number | FindAllOptions, opts?: FindAllOptions): any;
 findById(id: string | number, opts: FindOptions = {}): Observable<O>;
-create(data: Partial<I>, params?: Params, queryParams?: Params, callIdentifier = false): Observable<O>;
-update(id: string, data: Partial<I>, params?: Params): Observable<O>;
-delete(id: string, params?: Record<string, string | number>, data?: Partial<I>): Observable<HttpResponse<void>>;
+create(data: Partial<I>, opts: BaseApiOptions = {}, callIdentifier = false): Observable<O>;
+update(id: string, data: Partial<I>, opts: BaseApiOptions = {}): Observable<O>;
+delete(id: string, opts: BaseApiOptions = {}, data?: Partial<I>): Observable<HttpResponse<void>>;
 protected initializeCacheOptions = (url: UrlBuilder, ttl?: number): CacheOptions;
 ```
 
@@ -239,7 +270,7 @@ The initializeCacheOptions return by default:
 ```ts
 {
     group: url.getRelativePath(),
-    ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
+        ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
 }
 ```
 *Note: You can override this function.*

@@ -4,7 +4,7 @@ import { HttpResponse } from '@angular/common/http';
 import { ApiClient } from '../client/api.client';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Config } from '../../config';
-import { CacheOptions, FindAllOptions, FindOptions, Params } from '../api-options';
+import { BaseApiOptions, CacheOptions, FindAllOptions, FindOptions } from '../api-options';
 import { PaginatedData } from './paginated-data';
 import { Injectable } from '@angular/core';
 
@@ -12,8 +12,6 @@ import { Injectable } from '@angular/core';
 export class RestService<O, I = O> {
     protected readonly baseUrl = this.config.client.baseUrl;
     protected readonly resourceUri!: string;
-
-    private baseUrlBuilder?: UrlBuilder;
 
     constructor(protected config: Config,
                 protected apiClient: ApiClient) {
@@ -27,17 +25,21 @@ export class RestService<O, I = O> {
         const options = (typeof pageOrOpts === 'number' ? opts : pageOrOpts) || {};
         const page = typeof pageOrOpts === 'number' ? pageOrOpts : null;
 
-        const url = this.getBaseUrl().copy().addPath(this.resourceUri, options.params);
+        const url = this.getBaseUrl(options.resourceUri).getPathParams()
+            .addAll(options.params || {})
+            .getBaseUrl();
+
+        const queryParams = url.getQueryParams();
         if (page) {
-            url.addQueryParam('page', page);
+            queryParams.add('page', page);
         }
         if (options.q) {
             if (typeof options.q === 'object') {
                 for (const [key, value] of Object.entries(options.q)) {
-                    url.addQueryParam(`q[${key}]`, value);
+                    queryParams.add(`q[${key}]`, value);
                 }
             } else {
-                url.addQueryParam('q', options.q);
+                queryParams.add('q', options.q);
             }
         }
 
@@ -47,20 +49,23 @@ export class RestService<O, I = O> {
     }
 
     findById(id: string | number, opts: FindOptions = {}): Observable<O> {
-        const url = this.getBaseUrl().copy()
-            .addPath(this.resourceUri, opts.params)
-            .addPath(':id', { id })
-            .addQueryParams(opts.queryParams || {});
+        const url = this.getBaseUrl(opts.resourceUri)
+            .addPath(':id', { ...opts.params, id })
+            .getQueryParams().addAll(opts.queryParams || {})
+            .getBaseUrl();
 
         return this.apiClient
             .get<O>(url, this.initializeCacheOptions(url, opts.ttl))
             .pipe(map((res) => res.body as O));
     }
 
-    create(data: Partial<I>, params?: Params, queryParams?: Params, callIdentifier = false): Observable<O> {
-        const url = this.getBaseUrl().copy().addPath(this.resourceUri, params);
-        if (queryParams) {
-            url.addQueryParams(queryParams);
+    create(data: Partial<I>, opts: BaseApiOptions = {}, callIdentifier = false): Observable<O> {
+        const url = this.getBaseUrl(opts.resourceUri).getPathParams()
+            .addAll(opts.params || {})
+            .getBaseUrl();
+
+        if (opts.queryParams) {
+            url.getQueryParams().addAll(opts.queryParams);
         }
 
         return this.apiClient.post<O>(url, data).pipe(
@@ -79,21 +84,18 @@ export class RestService<O, I = O> {
         );
     }
 
-    update(id: string, data: Partial<I>, params?: Params): Observable<O> {
-        const url = this.getBaseUrl().copy()
-            .addPath(this.resourceUri, params)
-            .addPath(':id', { id })
+    update(id: string, data: Partial<I>, opts: BaseApiOptions = {}): Observable<O> {
+        const url = this.getBaseUrl(opts.resourceUri)
+            .addPath(':id', { ...opts.params, id });
 
         return this.apiClient
             .patch<O>(url, data)
             .pipe(map((res) => res.body as O));
     }
 
-    delete(id: string, params?: Record<string, string | number>, data?: Partial<I>): Observable<HttpResponse<void>> {
+    delete(id: string, opts: BaseApiOptions = {}, data?: Partial<I>): Observable<HttpResponse<void>> {
         return this.apiClient.delete<void>(
-            this.getBaseUrl().copy()
-                .addPath(this.resourceUri, params)
-                .addPath(':id', { id }),
+            this.getBaseUrl(opts.resourceUri).addPath(':id', { ...opts.params, id }),
             data,
         );
     }
@@ -103,14 +105,12 @@ export class RestService<O, I = O> {
         ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
     })
 
-    private getBaseUrl(): UrlBuilder {
+    private getBaseUrl(resourceUri?: string): UrlBuilder {
         if (!this.baseUrl) {
             throw Error('BaseUrl is not defined');
         }
 
-        if (!this.baseUrlBuilder) {
-            this.baseUrlBuilder = UrlBuilder.createFromUrl(this.baseUrl);
-        }
-        return this.baseUrlBuilder;
+        return UrlBuilder.createFromUrl(this.baseUrl)
+            .addPath(resourceUri ?? this.resourceUri);
     }
 }

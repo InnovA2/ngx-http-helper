@@ -3,11 +3,16 @@ export interface CacheOptions {
     ttl: number;
 }
 
-export type Params = Record<string, string | number | boolean>;
+type Param = string | number | boolean;
+export type Params = Record<string, Param>;
 
-export interface FindOptions {
+export interface BaseApiOptions {
     params?: Params;
     queryParams?: Params;
+    resourceUri?: string;
+}
+
+export interface FindOptions extends BaseApiOptions {
     ttl?: number;
 }
 
