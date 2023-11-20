@@ -18,7 +18,7 @@
     "@angular/platform-browser": "^16.0.0",
     "@angular/platform-browser-dynamic": "^16.0.0",
     "@angular/router": "^16.0.0",
-    "@innova2/url-builder": "^2.4.0",
+    "@innova2/url-builder": "^3.0.1",
     "@ionic/storage-angular": "^4.0.0",
     "ionic-cache": "^6.0.3",
     "rxjs": "~7.8.0",
