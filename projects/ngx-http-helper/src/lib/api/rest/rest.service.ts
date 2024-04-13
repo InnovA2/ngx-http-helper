@@ -49,10 +49,7 @@ export class RestService<O, I = O> {
     }
 
     findById(id: string | number, opts: FindOptions = {}): Observable<O> {
-        const url = this.getBaseUrl(opts.resourceUri)
-            .addPath(':id', { ...opts.params, id })
-            .getQueryParams().addAll(opts.queryParams || {})
-            .getBaseUrl();
+        const url = this.buildUrlById(id, opts);
 
         return this.apiClient
             .get<O>(url, this.initializeCacheOptions(url, opts.ttl))
@@ -84,26 +81,30 @@ export class RestService<O, I = O> {
         );
     }
 
-    update(id: string, data: Partial<I>, opts: BaseApiOptions = {}): Observable<O> {
-        const url = this.getBaseUrl(opts.resourceUri)
-            .addPath(':id', { ...opts.params, id });
+    update(id: string | number, data: Partial<I>, opts: BaseApiOptions = {}): Observable<O> {
+        const url = this.buildUrlById(id, opts);
 
         return this.apiClient
             .patch<O>(url, data)
             .pipe(map((res) => res.body as O));
     }
 
-    delete(id: string, opts: BaseApiOptions = {}, data?: Partial<I>): Observable<HttpResponse<void>> {
-        return this.apiClient.delete<void>(
-            this.getBaseUrl(opts.resourceUri).addPath(':id', { ...opts.params, id }),
-            data,
-        );
+    delete(id: string | number, opts: BaseApiOptions = {}, data?: Partial<I>): Observable<HttpResponse<void>> {
+        const url = this.buildUrlById(id, opts);
+        return this.apiClient.delete<void>(url, data);
     }
 
     protected initializeCacheOptions = (url: UrlBuilder, ttl?: number): CacheOptions => ({
         group: url.getRelativePath(),
         ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
     })
+
+    private buildUrlById(id: string | number, opts: BaseApiOptions = {}) {
+        return this.getBaseUrl(opts.resourceUri)
+            .addPath(':id', { ...opts.params, id })
+            .getQueryParams().addAll(opts.queryParams || {})
+            .getBaseUrl();
+    }
 
     private getBaseUrl(resourceUri?: string): UrlBuilder {
         if (!this.baseUrl) {
