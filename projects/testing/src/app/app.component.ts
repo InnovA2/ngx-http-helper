@@ -12,7 +12,5 @@ export class AppComponent implements OnInit {
 
     ngOnInit(): void {
         this.userService.findAll().subscribe(console.log);
-        this.userService.findAll().subscribe(console.log);
-        this.userService.findAll().subscribe(console.log);
     }
 }

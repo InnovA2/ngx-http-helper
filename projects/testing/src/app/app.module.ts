@@ -23,7 +23,7 @@ import { NgxHttpHelperModule } from '../../../ngx-http-helper/src/public-api';
                 domains: [API_URL]
             }],
             client: {
-                baseUrl: 'https://64809e49f061e6ec4d499687.mockapi.io',
+                baseUrl: API_URL,
             },
         })
     ],
