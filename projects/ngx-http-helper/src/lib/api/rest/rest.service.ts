@@ -6,16 +6,15 @@ import { UrlBuilder } from '@innova2/url-builder';
 import { Config } from '../../config';
 import { BaseApiOptions, CacheOptions, FindAllOptions, FindOptions } from '../api-options';
 import { PaginatedData } from './paginated-data';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable()
 export class RestService<O, I = O> {
+    protected config = inject(Config);
+    protected apiClient = inject(ApiClient);
+
     protected readonly baseUrl = this.config.client.baseUrl;
     protected readonly resourceUri!: string;
-
-    constructor(protected config: Config,
-                protected apiClient: ApiClient) {
-    }
 
     findAll(opts?: FindAllOptions): Observable<O[]>;
 

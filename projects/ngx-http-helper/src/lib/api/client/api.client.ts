@@ -1,5 +1,5 @@
 import { catchError, Observable, throwError } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { UrlBuilder } from '@innova2/url-builder';
 import { CacheService } from 'ionic-cache';
@@ -8,10 +8,9 @@ import { CacheOptions } from '../api-options';
 
 @Injectable()
 export class ApiClient {
-    constructor(private httpClient: HttpClient,
-                private config: Config,
-                private cacheService: CacheService) {
-    }
+    private httpClient = inject(HttpClient);
+    private config = inject(Config);
+    private cacheService = inject(CacheService);
 
     get<T>(url: UrlBuilder, cache?: CacheOptions, opts?: any): Observable<HttpResponse<T>> {
         const call = this.call<T>('get', url, opts || {});
