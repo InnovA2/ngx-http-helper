@@ -6,9 +6,9 @@ import { Config } from '../../config';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Injectable } from '@angular/core';
 import { PaginatedData } from './paginated-data';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CacheModule } from 'ionic-cache';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 interface User {
     id: number;
@@ -42,7 +42,7 @@ describe('RestService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, CacheModule.forRoot()],
+            imports: [CacheModule.forRoot()],
             providers: [
                 {
                     provide: Config,
@@ -53,8 +53,10 @@ describe('RestService', () => {
                     },
                 },
                 ApiClient,
-                UserService
-            ],
+                UserService,
+                provideHttpClient(withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
         });
 
         apiClient = TestBed.inject(ApiClient);

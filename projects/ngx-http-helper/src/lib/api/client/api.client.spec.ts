@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { ApiClient } from './api.client';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Config } from '../../config';
 import { of, throwError } from 'rxjs';
 import { CacheModule, CacheService } from 'ionic-cache';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UrlBuilder } from '@innova2/url-builder';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ApiClientService', () => {
     const url = 'http://localhost';
@@ -19,7 +20,7 @@ describe('ApiClientService', () => {
         });
 
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, RouterTestingModule, CacheModule.forRoot()],
+            imports: [RouterTestingModule, CacheModule.forRoot()],
             providers: [
                 {
                     provide: Config,
@@ -30,8 +31,10 @@ describe('ApiClientService', () => {
                     },
                 },
                 ApiClient,
-                { provide: CacheService, useValue: cacheService }
-            ],
+                { provide: CacheService, useValue: cacheService },
+                provideHttpClient(withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
         });
 
         apiClient = TestBed.inject(ApiClient);

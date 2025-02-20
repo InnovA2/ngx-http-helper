@@ -1,7 +1,7 @@
 import { AuthInterceptor } from './auth.interceptor';
-import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Config } from '../config';
 import { of } from 'rxjs';
 
@@ -11,7 +11,7 @@ describe('TokenInterceptor', () => {
 
     const init = (config: Config) => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [],
             providers: [
                 {
                     provide: Config,
@@ -21,8 +21,10 @@ describe('TokenInterceptor', () => {
                     multi: true,
                     provide: HTTP_INTERCEPTORS,
                     useClass: AuthInterceptor,
-                }
-            ],
+                },
+                provideHttpClient(withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
         });
         httpClient = TestBed.inject(HttpClient);
         httpTestingController = TestBed.inject(HttpTestingController);
