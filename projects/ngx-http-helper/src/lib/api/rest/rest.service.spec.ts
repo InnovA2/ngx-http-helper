@@ -2,12 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { RestService } from './rest.service';
 import { ApiClient } from '../client/api.client';
 import { EMPTY, Observable, of } from 'rxjs';
-import { Config } from '../../http-helper.tokens';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Injectable } from '@angular/core';
-import { PaginatedData } from './paginated-data';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_HELPER_CONFIG_TOKEN } from '../../http-helper.tokens';
 
 interface User {
     id: number;
@@ -43,11 +42,11 @@ describe('RestService', () => {
         TestBed.configureTestingModule({
             providers: [
                 {
-                    provide: Config,
+                    provide: HTTP_HELPER_CONFIG_TOKEN,
                     useValue: {
-                        client: {
-                            baseUrl: 'http://localhost'
-                        }
+                        baseUrls: {
+                            default: 'http://localhost',
+                        },
                     },
                 },
                 ApiClient,
@@ -63,41 +62,53 @@ describe('RestService', () => {
 
     describe('findAll tests', () => {
         it('should findAll', (done) => {
+            // Arrange
             spyOn(apiClient, 'get').and.returnValue(of({ body: [user] }) as any);
 
+            // Act
             userService.findAll().subscribe(res => {
+                // Assert
                 expect(res).toEqual([user]);
                 done();
             });
         });
 
         it('should findAll by string filter', (done) => {
+            // Arrange
             spyOn(apiClient, 'get').and.returnValue(of({ body: [user] }) as any);
 
+            // Act
             userService.findAll({ q: 'foo' }).subscribe(res => {
+                // Assert
                 expect(res).toEqual([user]);
                 done();
             });
         });
 
         it('should findAll by object filter', (done) => {
+            // Arrange
             spyOn(apiClient, 'get').and.returnValue(of({ body: [user] }) as any);
 
+            // Act
             userService.findAll({ q: { name: 'foo' } }).subscribe(res => {
+                // Assert
                 expect(res).toEqual([user]);
                 done();
             });
         });
 
         it('should findAll paginated', (done) => {
-            const page = new PaginatedData<User>();
-            page.totalItems = 1;
-            page.totalPages = 1;
+            // Arrange
+            spyOn(apiClient, 'get').and.returnValue(of({
+                body: {
+                    totalItems: 1,
+                    totalPages: 1,
+                },
+            }) as any);
 
-            spyOn(apiClient, 'get').and.returnValue(of({ body: page }) as any);
-
+            // Act
             userService.findAll(1).subscribe(res => {
-                expect(res).toBeInstanceOf(PaginatedData);
+                // Assert
                 expect(res.totalItems).toBe(1);
                 expect(res.totalPages).toBe(1);
                 done();
@@ -105,7 +116,7 @@ describe('RestService', () => {
         });
 
         it('should findAll with specific resourceUri', (done) => {
-            spyOn(apiClient, 'get').and.callFake(url => of({ body: url.getRelativePath() }) as any);
+            spyOn(apiClient, 'get').and.callFake(url => of({ body: (url as UrlBuilder).getRelativePath() }) as any);
 
             (userService.findAllByRoleId(1) as Observable<any>).subscribe(res => {
                 expect(res).toEqual('/roles/1/users');
@@ -143,8 +154,8 @@ describe('RestService', () => {
             }).subscribe(res => {
                 expect(res).toEqual(newUser);
 
-                const expectedUrl = UrlBuilder.createFromUrl('http://localhost/users?type=test');
-                expect(apiClient.post).toHaveBeenCalledWith(expectedUrl, newUser);
+                const expectedUrl = new UrlBuilder().addPath('users').addQueryParam('type', 'test')
+                expect(apiClient.post).toHaveBeenCalledWith(expectedUrl, newUser, { baseUrlKey: 'default'  });
                 done();
             });
         });

@@ -4,12 +4,11 @@ import { HttpResponse } from '@angular/common/http';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Injectable, inject } from '@angular/core';
 import { ApiClient } from '../client/api.client';
-import { IBaseApiOptions, IFindAllOptions, IFindOptions } from '../api';
-import { PaginatedData } from './paginated-data';
+import { IBaseApiOptions, IFindAllOptions, IFindOptions, IPaginatedData } from '../api';
 import { HTTP_HELPER_CONFIG_TOKEN } from '../../http-helper.tokens';
 
 @Injectable()
-export class RestService<O, I = O> {
+export class RestService<O, I = O, P = IPaginatedData<O>> {
     protected config = inject(HTTP_HELPER_CONFIG_TOKEN);
     protected apiClient = inject(ApiClient);
 
@@ -18,7 +17,7 @@ export class RestService<O, I = O> {
 
     findAll(opts?: IFindAllOptions): Observable<O[]>;
 
-    findAll(page: number, opts?: IFindAllOptions): Observable<PaginatedData<O>>;
+    findAll(page: number, opts?: IFindAllOptions): Observable<P>;
 
     findAll(pageOrOpts?: number | IFindAllOptions, opts?: IFindAllOptions): any {
         const options = (typeof pageOrOpts === 'number' ? opts : pageOrOpts) || {};
