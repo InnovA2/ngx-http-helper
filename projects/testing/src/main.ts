@@ -1,28 +1,16 @@
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-import { NgxHttpHelperModule } from '../../ngx-http-helper/src/public-api';
-import { of } from 'rxjs';
+import { importProvidersFrom } from '@angular/core';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { API_URL } from './app/consts';
 import { AppComponent } from './app/app.component';
-import { importProvidersFrom } from '@angular/core';
+import { provideHttpHelper } from '../../ngx-http-helper/src/public-api';
 
 
 bootstrapApplication(AppComponent, {
-    providers: [importProvidersFrom(BrowserModule, NgxHttpHelperModule.forRoot({
-            authenticators: [{
-                    tokenSelector: () => of('test'),
-                    scheme: 'Bearer',
-                    domains: ['https://foo.bar'],
-                }, {
-                    tokenSelector: () => of('My Token'),
-                    scheme: 'Bearer',
-                    domains: [API_URL]
-                }],
-            client: {
-                baseUrl: API_URL,
-            },
-        }))]
+    providers: [importProvidersFrom(BrowserModule), provideHttpClient(withInterceptorsFromDi()), provideHttpHelper({
+        client: {
+            baseUrl: API_URL,
+        },
+    })]
 })
   .catch(err => console.error(err));

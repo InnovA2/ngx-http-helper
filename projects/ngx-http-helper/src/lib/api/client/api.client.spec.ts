@@ -1,9 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { ApiClient } from './api.client';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { Config } from '../../config';
+import { Config } from '../../http-helper.config';
 import { of, throwError } from 'rxjs';
-import { CacheModule, CacheService } from 'ionic-cache';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UrlBuilder } from '@innova2/url-builder';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -15,12 +14,8 @@ describe('ApiClientService', () => {
     let httpTestingController: HttpTestingController;
 
     beforeEach(() => {
-        const cacheService = jasmine.createSpyObj('CacheService', {
-            loadFromObservable: of({ foo: 'bar' })
-        });
-
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule, CacheModule.forRoot()],
+            imports: [RouterTestingModule],
             providers: [
                 {
                     provide: Config,
@@ -31,7 +26,6 @@ describe('ApiClientService', () => {
                     },
                 },
                 ApiClient,
-                { provide: CacheService, useValue: cacheService },
                 provideHttpClient(withInterceptorsFromDi()),
                 provideHttpClientTesting()
             ]
@@ -51,13 +45,6 @@ describe('ApiClientService', () => {
 
         expect(req.request.method).toBe('GET');
         expect(req.request.url).toBe(url);
-    });
-
-    it('should call in GET method with cache', (done) => {
-        apiClient.get(UrlBuilder.createFromUrl(url), { ttl: 1, group: 'test' }).subscribe((res) => {
-            expect(res).toEqual({ foo: 'bar' } as any);
-            done();
-        });
     });
 
     it('should call in PUT method', () => {

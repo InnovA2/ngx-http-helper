@@ -2,7 +2,7 @@ import { AuthInterceptor } from './auth.interceptor';
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { Config } from '../config';
+import { Config } from '../http-helper.config';
 import { of } from 'rxjs';
 
 describe('TokenInterceptor', () => {

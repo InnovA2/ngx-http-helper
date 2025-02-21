@@ -3,17 +3,17 @@ import { mergeMap, Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { ApiClient } from '../client/api.client';
 import { UrlBuilder } from '@innova2/url-builder';
-import { Config } from '../../config';
+import { HttpHelperConfig } from '../../http-helper.config';
 import { BaseApiOptions, CacheOptions, FindAllOptions, FindOptions } from '../api-options';
 import { PaginatedData } from './paginated-data';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable()
 export class RestService<O, I = O> {
-    protected config = inject(Config);
+    protected config = inject(HttpHelperConfig);
     protected apiClient = inject(ApiClient);
 
-    protected readonly baseUrl = this.config.client.baseUrl;
+    protected readonly baseUrl = this.config.client.baseUrl || '';
     protected readonly resourceUri!: string;
 
     findAll(opts?: FindAllOptions): Observable<O[]>;

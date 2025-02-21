@@ -9,12 +9,6 @@ import { UserService } from './user.service';
 export class AppComponent implements OnInit {
     private userService = inject(UserService);
 
-    /** Inserted by Angular inject() migration for backwards compatibility */
-    constructor(...args: unknown[]);
-
-    constructor() {
-    }
-
     ngOnInit(): void {
         this.userService.findAll().subscribe(console.log);
     }

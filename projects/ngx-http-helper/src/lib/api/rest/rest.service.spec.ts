@@ -2,12 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { RestService } from './rest.service';
 import { ApiClient } from '../client/api.client';
 import { EMPTY, Observable, of } from 'rxjs';
-import { Config } from '../../config';
+import { Config } from '../../http-helper.config';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Injectable } from '@angular/core';
 import { PaginatedData } from './paginated-data';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { CacheModule } from 'ionic-cache';
 import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 interface User {
@@ -42,7 +41,6 @@ describe('RestService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [CacheModule.forRoot()],
             providers: [
                 {
                     provide: Config,

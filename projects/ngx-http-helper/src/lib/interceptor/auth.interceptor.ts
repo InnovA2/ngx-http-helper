@@ -1,18 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { first, mergeMap, Observable } from 'rxjs';
-import { Config, IAuthConfig } from '../config';
+import { AuthInterceptorConfig } from '../http-helper.config';
 import { UrlBuilder } from '@innova2/url-builder';
+import { IAuthConfig } from '../http-helper';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    private config = inject(Config);
-
-    /** Inserted by Angular inject() migration for backwards compatibility */
-    constructor(...args: unknown[]);
-
-
-    constructor() {}
+    private config = inject(AuthInterceptorConfig);
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const authConfig = this.findAuthConfig(req.url);

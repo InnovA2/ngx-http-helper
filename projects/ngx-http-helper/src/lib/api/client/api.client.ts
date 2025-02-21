@@ -2,22 +2,15 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { UrlBuilder } from '@innova2/url-builder';
-import { CacheService } from 'ionic-cache';
-import { Config } from '../../config';
-import { CacheOptions } from '../api-options';
+import { HttpHelperConfig } from '../../http-helper.config';
 
 @Injectable()
 export class ApiClient {
     private httpClient = inject(HttpClient);
-    private config = inject(Config);
-    private cacheService = inject(CacheService);
+    private config = inject(HttpHelperConfig);
 
-    get<T>(url: UrlBuilder, cache?: CacheOptions, opts?: any): Observable<HttpResponse<T>> {
-        const call = this.call<T>('get', url, opts || {});
-
-        return cache && cache.ttl > 0
-            ? this.cacheService.loadFromObservable(url.getRelativePath(true), call, cache.group, cache.ttl)
-            : call;
+    get<T>(url: UrlBuilder, opts?: any): Observable<HttpResponse<T>> {
+        return this.call<T>('get', url, opts || {});
     }
 
     post<T>(url: UrlBuilder, data: any, opts?: any): Observable<HttpResponse<T>> {
