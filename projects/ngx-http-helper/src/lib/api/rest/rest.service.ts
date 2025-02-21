@@ -1,26 +1,26 @@
 import { map } from 'rxjs/operators';
 import { mergeMap, Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
-import { ApiClient } from '../client/api.client';
 import { UrlBuilder } from '@innova2/url-builder';
-import { HttpHelperConfig } from '../../http-helper.config';
-import { BaseApiOptions, CacheOptions, FindAllOptions, FindOptions } from '../api-options';
-import { PaginatedData } from './paginated-data';
 import { Injectable, inject } from '@angular/core';
+import { ApiClient } from '../client/api.client';
+import { IBaseApiOptions, IFindAllOptions, IFindOptions } from '../api';
+import { PaginatedData } from './paginated-data';
+import { HTTP_HELPER_CONFIG_TOKEN } from '../../http-helper.tokens';
 
 @Injectable()
 export class RestService<O, I = O> {
-    protected config = inject(HttpHelperConfig);
+    protected config = inject(HTTP_HELPER_CONFIG_TOKEN);
     protected apiClient = inject(ApiClient);
 
-    protected readonly baseUrl = this.config.client.baseUrl || '';
+    protected readonly baseUrlKey: keyof typeof this.config.baseUrls = 'default';
     protected readonly resourceUri!: string;
 
-    findAll(opts?: FindAllOptions): Observable<O[]>;
+    findAll(opts?: IFindAllOptions): Observable<O[]>;
 
-    findAll(page: number, opts?: FindAllOptions): Observable<PaginatedData<O>>;
+    findAll(page: number, opts?: IFindAllOptions): Observable<PaginatedData<O>>;
 
-    findAll(pageOrOpts?: number | FindAllOptions, opts?: FindAllOptions): any {
+    findAll(pageOrOpts?: number | IFindAllOptions, opts?: IFindAllOptions): any {
         const options = (typeof pageOrOpts === 'number' ? opts : pageOrOpts) || {};
         const page = typeof pageOrOpts === 'number' ? pageOrOpts : null;
 
@@ -43,19 +43,19 @@ export class RestService<O, I = O> {
         }
 
         return this.apiClient
-            .get<O[]>(url, this.initializeCacheOptions(url, options.ttl))
+            .get<O[]>(url, { baseUrlKey: this.baseUrlKey })
             .pipe(map((res) => res.body));
     }
 
-    findById(id: string | number, opts: FindOptions = {}): Observable<O> {
+    findById(id: string | number, opts: IFindOptions = {}): Observable<O> {
         const url = this.buildUrlById(id, opts);
 
         return this.apiClient
-            .get<O>(url, this.initializeCacheOptions(url, opts.ttl))
+            .get<O>(url, { baseUrlKey: this.baseUrlKey })
             .pipe(map((res) => res.body as O));
     }
 
-    create(data: Partial<I>, opts: BaseApiOptions = {}, callIdentifier = false): Observable<O> {
+    create(data: Partial<I>, opts: IBaseApiOptions = {}, callIdentifier = false): Observable<O> {
         const url = this.getBaseUrl(opts.resourceUri).getPathParams()
             .addAll(opts.params || {})
             .getBaseUrl();
@@ -64,7 +64,7 @@ export class RestService<O, I = O> {
             url.getQueryParams().addAll(opts.queryParams);
         }
 
-        return this.apiClient.post<O>(url, data).pipe(
+        return this.apiClient.post<O>(url, data, { baseUrlKey: this.baseUrlKey }).pipe(
             mergeMap((res) => {
                 if (!callIdentifier) {
                     return of(res);
@@ -74,31 +74,26 @@ export class RestService<O, I = O> {
                     throw Error('Location header not found');
                 }
                 const identifierUrl = url.copy().setPathSegments([path.replace(/^\/+/g, '')]);
-                return this.apiClient.get<O>(identifierUrl, this.initializeCacheOptions(identifierUrl));
+                return this.apiClient.get<O>(identifierUrl, { baseUrlKey: this.baseUrlKey });
             }),
             map((res) => res.body as O)
         );
     }
 
-    update(id: string | number, data: Partial<I>, opts: BaseApiOptions = {}): Observable<O> {
+    update(id: string | number, data: Partial<I>, opts: IBaseApiOptions = {}): Observable<O> {
         const url = this.buildUrlById(id, opts);
 
         return this.apiClient
-            .patch<O>(url, data)
+            .patch<O>(url, data, { baseUrlKey: this.baseUrlKey })
             .pipe(map((res) => res.body as O));
     }
 
-    delete(id: string | number, opts: BaseApiOptions = {}, data?: Partial<I>): Observable<HttpResponse<void>> {
+    delete(id: string | number, opts: IBaseApiOptions = {}, data?: Partial<I>): Observable<HttpResponse<void>> {
         const url = this.buildUrlById(id, opts);
-        return this.apiClient.delete<void>(url, data);
+        return this.apiClient.delete<void>(url, data, { baseUrlKey: this.baseUrlKey });
     }
 
-    protected initializeCacheOptions = (url: UrlBuilder, ttl?: number): CacheOptions => ({
-        group: url.getRelativePath(),
-        ttl: ttl ?? this.config.client.defaultCacheTTL ?? 0,
-    })
-
-    private buildUrlById(id: string | number, opts: BaseApiOptions = {}) {
+    private buildUrlById(id: string | number, opts: IBaseApiOptions = {}) {
         return this.getBaseUrl(opts.resourceUri)
             .addPath(':id', { ...opts.params, id })
             .getQueryParams().addAll(opts.queryParams || {})
@@ -106,11 +101,6 @@ export class RestService<O, I = O> {
     }
 
     private getBaseUrl(resourceUri?: string): UrlBuilder {
-        if (!this.baseUrl) {
-            throw Error('BaseUrl is not defined');
-        }
-
-        return UrlBuilder.createFromUrl(this.baseUrl)
-            .addPath(resourceUri ?? this.resourceUri);
+        return new UrlBuilder().addPath(resourceUri ?? this.resourceUri);
     }
 }

@@ -1,11 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { ApiClient } from './api.client';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { Config } from '../../http-helper.config';
 import { of, throwError } from 'rxjs';
-import { RouterTestingModule } from '@angular/router/testing';
 import { UrlBuilder } from '@innova2/url-builder';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_HELPER_CONFIG_TOKEN } from '../../http-helper.tokens';
 
 describe('ApiClientService', () => {
     const url = 'http://localhost';
@@ -15,14 +14,14 @@ describe('ApiClientService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule],
             providers: [
                 {
-                    provide: Config,
+                    provide: HTTP_HELPER_CONFIG_TOKEN,
                     useValue: {
-                        client: {
-                            catch: (err: any) => throwError(() => err),
-                        }
+                        baseUrls: {
+                            default: url
+                        },
+                        catch: (err: any) => throwError(() => err),
                     },
                 },
                 ApiClient,

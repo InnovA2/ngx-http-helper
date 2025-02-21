@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { RestService } from './rest.service';
 import { ApiClient } from '../client/api.client';
 import { EMPTY, Observable, of } from 'rxjs';
-import { Config } from '../../http-helper.config';
+import { Config } from '../../http-helper.tokens';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Injectable } from '@angular/core';
 import { PaginatedData } from './paginated-data';

@@ -1,26 +1,33 @@
 import { Provider } from '@angular/core';
 import { Observable, ObservableInput } from 'rxjs';
+import { FeatureType } from './http-helper.enum';
 
-export interface IClientConfig {
-    baseUrl?: string;
-    defaultCacheTTL?: number;
+// Global config
+export interface IBaseUrls {
+    default: string;
+    [key: string]: string;
+}
+
+export interface IHttpHelperConfig {
+    baseUrls: IBaseUrls;
     catch?: (err: any, caught: Observable<any>) => ObservableInput<any>;
 }
 
-export interface IAuthConfig {
+// Features config
+interface IAuthConfig {
     tokenSelector: () => Observable<string>;
     header?: string;
     scheme?: string;
     domains?: string[];
 }
 
-export const enum FeatureType {
-    AuthInterceptor,
+export interface IAuthInterceptorConfig {
+    authenticators: IAuthConfig[];
 }
 
-interface HttpHelperFeature<Feature extends FeatureType> {
+export interface IHttpHelperFeature<Feature extends FeatureType> {
     feature: Feature,
     providers: Provider[],
 }
 
-type HttpHelperFeatures = HttpHelperFeature<FeatureType>[];
+export type HttpHelperFeatures = IHttpHelperFeature<FeatureType>[];
