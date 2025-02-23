@@ -1,14 +1,12 @@
 import { makeEnvironmentProviders, Provider } from '@angular/core';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './interceptor/auth.interceptor';
 import { ApiClient } from './api/client/api.client';
 import { RestService } from './api/rest/rest.service';
-import { FeatureType } from './http-helper.enum';
-import type { IHttpHelperFeature, HttpHelperFeatures, IHttpHelperConfig, IAuthInterceptorConfig } from './http-helper';
-import { AUTH_INTERCEPTOR_CONFIG_TOKEN, HTTP_HELPER_CONFIG_TOKEN } from './http-helper.tokens';
+import { FeatureKind } from './http-helper.enum';
+import type { IHttpHelperFeature, HttpHelperFeatures, IHttpHelperConfig, IAuthFeatureConfig } from './http-helper';
+import { AUTH_FEATURE_CONFIG_TOKEN, HTTP_HELPER_CONFIG_TOKEN } from './http-helper.tokens';
 
 
-const getHttpHelperFeature = <Feature extends FeatureType>(feature: Feature, providers: Provider[]): IHttpHelperFeature<FeatureType> => ({
+const getHttpHelperFeature = <Feature extends FeatureKind>(feature: Feature, providers: Provider[]): IHttpHelperFeature<FeatureKind> => ({
     feature,
     providers,
 });
@@ -24,15 +22,10 @@ export const provideHttpHelper = (config: IHttpHelperConfig, ...features: HttpHe
         features.map((feature) => feature.providers)
     ]);
 
-export const withAuthInterceptor = (config: IAuthInterceptorConfig): IHttpHelperFeature<FeatureType.AuthInterceptor> =>
-    getHttpHelperFeature(FeatureType.AuthInterceptor, [
+export const withAuth = (config: IAuthFeatureConfig): IHttpHelperFeature<FeatureKind.Auth> =>
+    getHttpHelperFeature(FeatureKind.Auth, [
         {
-            provide: AUTH_INTERCEPTOR_CONFIG_TOKEN,
+            provide: AUTH_FEATURE_CONFIG_TOKEN,
             useValue: config,
-        },
-        {
-            multi: true,
-            provide: HTTP_INTERCEPTORS,
-            useClass: AuthInterceptor,
         },
     ]);

@@ -1,6 +1,6 @@
 import { Provider } from '@angular/core';
 import { Observable, ObservableInput } from 'rxjs';
-import { FeatureType } from './http-helper.enum';
+import { FeatureKind } from './http-helper.enum';
 
 // Global config
 export interface IBaseUrls {
@@ -14,20 +14,33 @@ export interface IHttpHelperConfig {
 }
 
 // Features config
-interface IAuthConfig {
-    tokenSelector: () => Observable<string>;
+type TokenInterceptor = () => Observable<string | null | undefined>;
+
+interface ITokenSelectors {
+    default: TokenInterceptor;
+    [key: string]: TokenInterceptor;
+}
+
+interface IAuthenticator {
+    tokenSelectorKey?: string;
     header?: string;
     scheme?: string;
     domains?: string[];
 }
 
-export interface IAuthInterceptorConfig {
-    authenticators: IAuthConfig[];
+interface IAuthGuard {
+    redirectRoute?: string;
 }
 
-export interface IHttpHelperFeature<Feature extends FeatureType> {
+export interface IAuthFeatureConfig {
+    tokenSelectors: ITokenSelectors;
+    authenticators: IAuthenticator[];
+    guard?: IAuthGuard;
+}
+
+export interface IHttpHelperFeature<Feature extends FeatureKind> {
     feature: Feature,
     providers: Provider[],
 }
 
-export type HttpHelperFeatures = IHttpHelperFeature<FeatureType>[];
+export type HttpHelperFeatures = IHttpHelperFeature<FeatureKind>[];

@@ -10,8 +10,8 @@ A lightweight library to easily call your APIs and add JWT token or API key on e
 - [Authors](#busts_in_silhouette-authors)
 - [Contributors](#handshake-contributors)
 
-## :boom: Breaking changes (1.0 -> 1.1)
-The signature of the following methods changes:
+## :boom: Breaking changes (v1 -> v2)
+Switch to standalone mode:
 - **RestService#create**: arguments 'params' and 'queryParams' are replaced by 'opts' (options object containing 'params' and 'queryParams' properties)
 - **RestService#update**: argument 'params' is replaced by 'opts' (options object containing 'params' property)
 - **RestService#remove**: argument 'params' is replaced by 'opts' (options object containing 'params' property)
@@ -83,7 +83,7 @@ NgxHttpHelperModule.forRoot({
 
 ### Use ApiClient instead of HttpClient
 The ApiClient provide methods to call HttpClient easily:
-- get : with optional cache
+- get
 - put
 - patch
 - post

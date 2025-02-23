@@ -1,3 +1,3 @@
-export const enum FeatureType {
-    AuthInterceptor,
+export const enum FeatureKind {
+    Auth,
 }
