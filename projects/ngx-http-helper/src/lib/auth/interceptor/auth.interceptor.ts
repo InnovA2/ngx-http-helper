@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { HttpHandler, HttpRequest } from '@angular/common/http';
+import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { first, mergeMap } from 'rxjs';
 import { UrlBuilder } from '@innova2/url-builder';
 import { AUTH_FEATURE_CONFIG_TOKEN } from '../../http-helper.tokens';
@@ -17,7 +17,7 @@ const findAuthConfig = (domain: string, config: IAuthFeatureConfig): IAuthentica
     });
 }
 
-export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandler) => {
+export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
     const config = inject(AUTH_FEATURE_CONFIG_TOKEN);
     if (!config?.authenticators) {
         throw Error(`The auth config does not exist. Please declare it from the withAuth()`);
@@ -27,7 +27,7 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandler) =>
     const authConfig = findAuthConfig(domain, config);
 
     if (!authConfig) {
-        return next.handle(req);
+        return next(req);
     }
 
     const tokenSelector = config.tokenSelectors[authConfig.tokenSelectorKey || 'default'];
@@ -47,7 +47,7 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandler) =>
                 });
             }
 
-            return next.handle(req);
+            return next(req);
         })
     );
 }

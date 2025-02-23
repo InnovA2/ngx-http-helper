@@ -1,8 +1,8 @@
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { importProvidersFrom } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AppComponent } from './app/app.component';
-import { provideHttpHelper, withAuth } from '../../ngx-http-helper/src/public-api';
+import { authInterceptor, provideHttpHelper, withAuth } from '../../ngx-http-helper/src/public-api';
 import { API_URL } from './app/consts';
 import { of } from 'rxjs';
 import { provideRouter } from '@angular/router';
@@ -18,7 +18,7 @@ bootstrapApplication(AppComponent, {
     providers: [
         importProvidersFrom(BrowserModule),
         provideRouter(routes),
-        provideHttpClient(), // todo : add interceptor
+        provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpHelper({
             baseUrls: {
                 default: API_URL,
