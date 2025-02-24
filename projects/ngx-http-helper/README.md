@@ -269,7 +269,7 @@ bootstrapApplication(AppComponent, {
                 authenticators: [{
                     // Here, the default tokenSelector is used
                     domains: ['https://foo.sample.com'],
-                    // This add the 'Bearer My JWT Token' to 'Authorization' header of each request to 'https://bar.sample.com'
+                    // This add the 'Bearer My JWT Token' to 'Authorization' header of each request to 'https://foo.sample.com'
                 }, {
                     tokenSelectorKey: 'other',
                     scheme: 'Bearer',
