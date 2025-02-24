@@ -4,7 +4,7 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@innova2/url-builder": "^3.1.0"
+    "@innova2/url-builder": "^4.0.0"
   },
   "scripts": {
     "test": "ng test",

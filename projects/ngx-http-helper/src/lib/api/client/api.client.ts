@@ -39,7 +39,7 @@ export class ApiClient {
         const baseUrl = UrlBuilder.createFromUrl(this.config.baseUrls[baseUrlKey] || '')
 
         if (typeof urlOrPath === 'string') {
-            const url = UrlBuilder.createFromUrl(urlOrPath);
+            const url = UrlBuilder.createFromUrl(urlOrPath, window.location.origin);
             return baseUrl.mergePathWith(url);
         }
 
