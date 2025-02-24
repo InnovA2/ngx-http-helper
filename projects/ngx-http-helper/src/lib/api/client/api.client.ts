@@ -36,10 +36,12 @@ export class ApiClient {
             throw Error(`BaseUrl '${baseUrlKey}' does not exist. Please declare it from the provideHttpHelper()`);
         }
 
-        const baseUrl = UrlBuilder.createFromUrl(this.config.baseUrls[baseUrlKey] || '')
+        const { origin } = window.location;
+
+        const baseUrl = UrlBuilder.createFromUrl(initialBaseUrl, origin)
 
         if (typeof urlOrPath === 'string') {
-            const url = UrlBuilder.createFromUrl(urlOrPath, window.location.origin);
+            const url = UrlBuilder.createFromUrl(urlOrPath, origin);
             return baseUrl.mergePathWith(url);
         }
 
