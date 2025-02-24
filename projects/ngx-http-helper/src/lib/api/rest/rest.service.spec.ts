@@ -154,7 +154,7 @@ describe('RestService', () => {
             }).subscribe(res => {
                 expect(res).toEqual(newUser);
 
-                const expectedUrl = new UrlBuilder().addPath('users').addQueryParam('type', 'test')
+                const expectedUrl = new UrlBuilder().addPath('users').getQueryParams().add('type', 'test').getBaseUrl();
                 expect(apiClient.post).toHaveBeenCalledWith(expectedUrl, newUser, { baseUrlKey: 'default'  });
                 done();
             });
