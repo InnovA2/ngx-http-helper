@@ -10,7 +10,20 @@ export interface IBaseUrls {
 
 export interface IHttpHelperConfig {
     baseUrls: IBaseUrls;
-    catch?: (err: any, caught: Observable<any>) => ObservableInput<any>;
+
+    /**
+     * The first catch function allows to inject dependencies (executed in InjectionContext).
+     * The second is transmitted to the catchError operator of rxjs.
+     * Example :
+     * catch: () => {
+     *   const myService = inject(MyService);
+     *   return (err) => {
+     *     myService.myFunction();
+     *     return throwError(() => err);
+     *   }
+     * }
+     */
+    catch?: () => (err: any, caught: Observable<any>) => ObservableInput<any>;
 }
 
 // Features config

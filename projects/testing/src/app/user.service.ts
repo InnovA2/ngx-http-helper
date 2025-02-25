@@ -13,4 +13,8 @@ interface User {
 })
 export class UserService extends RestService<User> {
     protected override readonly resourceUri = 'users';
+
+    generateError() {
+        return this.apiClient.get('/test');
+    }
 }

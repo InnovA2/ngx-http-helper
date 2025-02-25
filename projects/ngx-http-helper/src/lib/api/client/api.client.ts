@@ -1,6 +1,6 @@
 import { catchError, Observable, throwError } from 'rxjs';
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UrlBuilder } from '@innova2/url-builder';
 import { HTTP_HELPER_CONFIG_TOKEN } from '../../http-helper.tokens';
 import { IApiClientOpts } from '../api';
@@ -9,6 +9,7 @@ import { IApiClientOpts } from '../api';
 export class ApiClient {
     private httpClient = inject(HttpClient);
     private config = inject(HTTP_HELPER_CONFIG_TOKEN);
+    private catch = this.config.catch?.() || ((err) => throwError(() => err));
 
     get<T>(path: UrlBuilder | string, opts: IApiClientOpts = {}): Observable<T> {
         return this.call<T>('get', path, opts);
@@ -64,6 +65,6 @@ export class ApiClient {
             ...options
         })
 
-        return call.pipe(catchError(this.config.catch || (err => throwError(() => err))));
+        return call.pipe(catchError(this.catch));
     }
 }

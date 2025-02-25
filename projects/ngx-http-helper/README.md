@@ -127,12 +127,19 @@ bootstrapApplication(AppComponent, {
                 default: API_URL,
                 otherApi: API_OTHER_URL,
             },
-            catch: (err) => {
-                console.log('Oh snap, an error occured', err);
-                return throwError(() => ({
-                    ...err,
-                    foo: 'bar'
-                }));
+            /**
+             * The first catch function allows to inject dependencies (executed in InjectionContext).
+             * The second is transmitted to the catchError operator of rxjs.
+             */
+            catch: () => {
+                const logger = inject(LoggerService);
+                return (err) => {
+                    logger.error('Oh snap, an error occured', err);
+                    return throwError(() => ({
+                        ...err,
+                        foo: 'bar'
+                    }));
+                }
             }
         }),
     ]
