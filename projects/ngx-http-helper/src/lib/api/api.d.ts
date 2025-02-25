@@ -1,8 +1,8 @@
 type Param = string | number | boolean;
 export type Params = Record<string, Param>;
 
-interface IApiClientOpts<T> {
-    baseUrlKey?: keyof T;
+interface IApiClientOpts {
+    baseUrlKey?: string;
     [key: string]: any;
 }
 

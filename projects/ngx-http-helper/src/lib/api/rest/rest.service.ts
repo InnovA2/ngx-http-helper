@@ -12,7 +12,7 @@ export class RestService<O, I = O, P = IPaginatedData<O>> {
     protected config = inject(HTTP_HELPER_CONFIG_TOKEN);
     protected apiClient = inject(ApiClient);
 
-    protected readonly baseUrlKey: keyof typeof this.config.baseUrls = 'default';
+    protected readonly baseUrlKey: string = 'default';
     protected readonly resourceUri!: string;
 
     findAll(opts?: IFindAllOptions): Observable<O[]>;
@@ -42,16 +42,14 @@ export class RestService<O, I = O, P = IPaginatedData<O>> {
         }
 
         return this.apiClient
-            .get<O[]>(url, { baseUrlKey: this.baseUrlKey })
-            .pipe(map((res) => res.body));
+            .get<O[]>(url, { baseUrlKey: this.baseUrlKey });
     }
 
     findById(id: string | number, opts: IFindOptions = {}): Observable<O> {
         const url = this.buildUrlById(id, opts);
 
         return this.apiClient
-            .get<O>(url, { baseUrlKey: this.baseUrlKey })
-            .pipe(map((res) => res.body as O));
+            .get<O>(url, { baseUrlKey: this.baseUrlKey });
     }
 
     create(data: Partial<I>, opts: IBaseApiOptions = {}, callIdentifier = false): Observable<O> {
@@ -63,10 +61,13 @@ export class RestService<O, I = O, P = IPaginatedData<O>> {
             url.getQueryParams().addAll(opts.queryParams);
         }
 
-        return this.apiClient.post<O>(url, data, { baseUrlKey: this.baseUrlKey }).pipe(
+        return this.apiClient.post<HttpResponse<O>>(url, data, {
+            baseUrlKey: this.baseUrlKey,
+            observe: 'response',
+        }).pipe(
             mergeMap((res) => {
                 if (!callIdentifier) {
-                    return of(res);
+                    return of(res.body as O);
                 }
                 const path = res.headers.get('location');
                 if (!path) {
@@ -75,7 +76,6 @@ export class RestService<O, I = O, P = IPaginatedData<O>> {
                 const identifierUrl = url.copy().setPathSegments([path.replace(/^\/+/g, '')]);
                 return this.apiClient.get<O>(identifierUrl, { baseUrlKey: this.baseUrlKey });
             }),
-            map((res) => res.body as O)
         );
     }
 
@@ -83,11 +83,10 @@ export class RestService<O, I = O, P = IPaginatedData<O>> {
         const url = this.buildUrlById(id, opts);
 
         return this.apiClient
-            .patch<O>(url, data, { baseUrlKey: this.baseUrlKey })
-            .pipe(map((res) => res.body as O));
+            .patch<O>(url, data, { baseUrlKey: this.baseUrlKey });
     }
 
-    delete(id: string | number, opts: IBaseApiOptions = {}, data?: Partial<I>): Observable<HttpResponse<void>> {
+    delete(id: string | number, opts: IBaseApiOptions = {}, data?: Partial<I>): Observable<void> {
         const url = this.buildUrlById(id, opts);
         return this.apiClient.delete<void>(url, data, { baseUrlKey: this.baseUrlKey });
     }

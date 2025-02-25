@@ -10,27 +10,27 @@ export class ApiClient {
     private httpClient = inject(HttpClient);
     private config = inject(HTTP_HELPER_CONFIG_TOKEN);
 
-    get<T>(urlOrPath: UrlBuilder | string, opts: IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>> {
-        return this.call<T>('get', urlOrPath, opts);
+    get<T>(path: UrlBuilder | string, opts: IApiClientOpts = {}): Observable<T> {
+        return this.call<T>('get', path, opts);
     }
 
-    post<T>(urlOrPath: UrlBuilder | string, data: any, opts: IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>> {
-        return this.call<T>('post', urlOrPath, opts, data);
+    post<T>(path: UrlBuilder | string, data: any, opts: IApiClientOpts = {}): Observable<T> {
+        return this.call<T>('post', path, opts, data);
     }
 
-    put<T>(urlOrPath: UrlBuilder | string, data: any, opts: IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>> {
-        return this.call<T>('put', urlOrPath, opts, data);
+    put<T>(path: UrlBuilder | string, data: any, opts: IApiClientOpts = {}): Observable<T> {
+        return this.call<T>('put', path, opts, data);
     }
 
-    patch<T>(urlOrPath: UrlBuilder | string, data: any, opts: IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>> {
-        return this.call<T>('patch', urlOrPath, opts, data);
+    patch<T>(path: UrlBuilder | string, data: any, opts: IApiClientOpts = {}): Observable<T> {
+        return this.call<T>('patch', path, opts, data);
     }
 
-    delete<T>(urlOrPath: UrlBuilder | string, data?: any, opts: IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>> {
-        return this.call<T>('delete', urlOrPath, opts, data);
+    delete<T>(path: UrlBuilder | string, data?: any, opts: IApiClientOpts = {}): Observable<T> {
+        return this.call<T>('delete', path, opts, data);
     }
 
-    private getUrl(urlOrPath: UrlBuilder | string, baseUrlKey: keyof typeof this.config.baseUrls) {
+    private getUrl(path: UrlBuilder | string, baseUrlKey: string) {
         const initialBaseUrl = this.config.baseUrls[baseUrlKey];
         if (!initialBaseUrl) {
             throw Error(`BaseUrl '${baseUrlKey}' does not exist. Please declare it from the provideHttpHelper()`);
@@ -40,17 +40,16 @@ export class ApiClient {
 
         const baseUrl = UrlBuilder.createFromUrl(initialBaseUrl, origin)
 
-        if (typeof urlOrPath === 'string') {
-            const url = UrlBuilder.createFromUrl(urlOrPath, origin);
+        if (typeof path === 'string') {
+            const url = UrlBuilder.createFromUrl(path, origin);
             return baseUrl.mergePathWith(url);
         }
 
-        return baseUrl.mergePathWith(urlOrPath);
+        return baseUrl.mergePathWith(path);
     }
 
-    private call<T>(method: string, urlOrPath: UrlBuilder | string, opts: IApiClientOpts<typeof this.config.baseUrls>, data?: any): Observable<HttpResponse<T>> {
+    private call<T>(method: string, path: UrlBuilder | string, opts: IApiClientOpts, data?: any): Observable<T> {
         const options: any = {
-            observe: 'response',
             ...opts,
             headers: {
                 ['Content-Type']: 'application/json',
@@ -58,7 +57,7 @@ export class ApiClient {
             }
         }
 
-        const url = this.getUrl(urlOrPath, opts.baseUrlKey || 'default');
+        const url = this.getUrl(path, opts.baseUrlKey || 'default');
 
         const call = this.httpClient.request(method, url.toString(), {
             body: data,

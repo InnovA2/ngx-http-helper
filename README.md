@@ -354,17 +354,17 @@ interface IAuthFeatureConfig {
 
 ### ApiClient
 ```ts
-interface IApiClientOpts<T> {
-    baseUrlKey?: keyof T;
+interface IApiClientOpts {
+    baseUrlKey?: string;
     [key: string]: any;
 }
 
 class ApiClient {
-    get<T>(url: UrlBuilder, IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>>
-    post<T>(url: UrlBuilder, data: any, IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>>
-    put<T>(url: UrlBuilder, data: any, IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>>
-    patch<T>(url: UrlBuilder, data: any, IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>>
-    delete<T>(url: UrlBuilder, data?: any, IApiClientOpts<typeof this.config.baseUrls> = {}): Observable<HttpResponse<T>>
+    get<T>(url: UrlBuilder, IApiClientOpts = {}): Observable<T>
+    post<T>(url: UrlBuilder, data: any, IApiClientOpts = {}): Observable<T>
+    put<T>(url: UrlBuilder, data: any, IApiClientOpts = {}): Observable<T>
+    patch<T>(url: UrlBuilder, data: any, IApiClientOpts = {}): Observable<T>
+    delete<T>(url: UrlBuilder, data?: any, IApiClientOpts = {}): Observable<T>
 }
 ```
 
@@ -400,12 +400,12 @@ class RestService<O, I = O, P = IPaginatedData<O>> {
     protected readonly resourceUri!: string;
 
     findAll(opts?: FindAllOptions): Observable<O[]>;
-    findAll(page: number, opts?: FindAllOptions): Observable<PaginatedData<O>>;
+    findAll(page: number, opts?: FindAllOptions): Observable<P>;
     findAll(pageOrOpts?: number | FindAllOptions, opts?: FindAllOptions): any;
     findById(id: string | number, opts: FindOptions = {}): Observable<O>;
     create(data: Partial<I>, opts: BaseApiOptions = {}, callIdentifier = false): Observable<O>;
     update(id: string, data: Partial<I>, opts: BaseApiOptions = {}): Observable<O>;
-    delete(id: string, opts: BaseApiOptions = {}, data?: Partial<I>): Observable<HttpResponse<void>>;
+    delete(id: string, opts: BaseApiOptions = {}, data?: Partial<I>): Observable<void>;
 }
 ```
 
