@@ -34,7 +34,7 @@ interface ITokenSelectors {
     [key: string]: TokenInterceptor;
 }
 
-interface IAuthenticator {
+export interface IAuthenticator {
     tokenSelectorKey?: string;
     header?: string;
     scheme?: string;

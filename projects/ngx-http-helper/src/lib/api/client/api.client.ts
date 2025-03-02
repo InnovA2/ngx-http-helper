@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlBuilder } from '@innova2/url-builder';
 import { HTTP_HELPER_CONFIG_TOKEN } from '../../http-helper.tokens';
-import { IApiClientOpts } from '../api';
+import { IApiClientOpts } from '../api.types';
 
 @Injectable()
 export class ApiClient {

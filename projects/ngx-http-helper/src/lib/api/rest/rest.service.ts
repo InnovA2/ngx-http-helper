@@ -1,10 +1,9 @@
-import { map } from 'rxjs/operators';
 import { mergeMap, Observable, of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { UrlBuilder } from '@innova2/url-builder';
 import { Injectable, inject } from '@angular/core';
 import { ApiClient } from '../client/api.client';
-import { IBaseApiOptions, IFindAllOptions, IFindOptions, IPaginatedData } from '../api';
+import { IBaseApiOptions, IFindAllOptions, IFindOptions, IPaginatedData } from '../api.types';
 import { HTTP_HELPER_CONFIG_TOKEN } from '../../http-helper.tokens';
 
 @Injectable()

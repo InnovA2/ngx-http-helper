@@ -2,7 +2,7 @@ import { makeEnvironmentProviders, Provider } from '@angular/core';
 import { ApiClient } from './api/client/api.client';
 import { RestService } from './api/rest/rest.service';
 import { FeatureKind } from './http-helper.enum';
-import type { IHttpHelperFeature, HttpHelperFeatures, IHttpHelperConfig, IAuthFeatureConfig } from './http-helper';
+import type { IHttpHelperFeature, HttpHelperFeatures, IHttpHelperConfig, IAuthFeatureConfig } from './http-helper.types';
 import { AUTH_FEATURE_CONFIG_TOKEN, HTTP_HELPER_CONFIG_TOKEN } from './http-helper.tokens';
 
 

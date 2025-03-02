@@ -1,25 +1,25 @@
 type Param = string | number | boolean;
-export type Params = Record<string, Param>;
+type Params = Record<string, Param>;
 
-interface IApiClientOpts {
+export interface IApiClientOpts {
     baseUrlKey?: string;
     [key: string]: any;
 }
 
-export interface IBaseApiOptions {
+export declare interface IBaseApiOptions {
     params?: Params;
     queryParams?: Params;
     resourceUri?: string;
 }
 
-export interface IFindOptions extends IBaseApiOptions {
+export declare interface IFindOptions extends IBaseApiOptions {
 }
 
-export interface IFindAllOptions extends IFindOptions {
+export declare interface IFindAllOptions extends IFindOptions {
     q?: string | Params;
 }
 
-export interface IPaginatedData<T> {
+export declare interface IPaginatedData<T> {
     totalItems: number;
     items: T[];
     totalPages: number;

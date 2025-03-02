@@ -1,10 +1,10 @@
 import { authInterceptor } from './auth.interceptor';
-import { HttpClient, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { AUTH_FEATURE_CONFIG_TOKEN } from '../../http-helper.tokens';
-import { IAuthFeatureConfig } from '../../http-helper';
+import { IAuthFeatureConfig } from '../../http-helper.types';
 
 describe('TokenInterceptor', () => {
     let httpClient: HttpClient;
