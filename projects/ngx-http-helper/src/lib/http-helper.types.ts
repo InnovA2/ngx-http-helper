@@ -23,7 +23,7 @@ export interface IHttpHelperConfig {
      *   }
      * }
      */
-    catch?: () => (err: any, caught: Observable<any>) => ObservableInput<any>;
+    catch?: () => (err: any, caught: Observable<any>) => any;
 }
 
 // Features config
